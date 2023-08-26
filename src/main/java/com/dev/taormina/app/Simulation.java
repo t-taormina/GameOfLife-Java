@@ -1,6 +1,9 @@
 package com.dev.taormina.app;
 
 public class Simulation {
+    public static int ALIVE = 1;
+    public static int DEAD = 0;
+
     int width;
     int height;
     int[][] board;
@@ -15,7 +18,7 @@ public class Simulation {
         for (int x = 0 ; x < this.height; x++) {
             StringBuilder line = new StringBuilder("|");
             for (int y = 0; y < this.width; y++) {
-                if (this.board[x][y] == 0 ){
+                if (this.board[x][y] == DEAD){
                     line.append(".");
                 } else {
                     line.append("*");
@@ -28,13 +31,13 @@ public class Simulation {
     }
     public void setAlive(int x, int y) {
         if (inBounds(x, y)) {
-            this.board[x][y] = 1;
+            this.board[x][y] = ALIVE;
         }
     }
 
     public void setDead(int x, int y) {
         if (inBounds(x, y)) {
-            this.board[x][y] = 0;
+            this.board[x][y] = DEAD;
         }
     }
 
@@ -44,7 +47,7 @@ public class Simulation {
 
     public boolean isAlive(int x, int y) {
         if (inBounds(x, y)) {
-            return this.board[x][y] == 1;
+            return this.board[x][y] == ALIVE;
         } else {
             return false;
         }
@@ -69,34 +72,19 @@ public class Simulation {
             for (int y = 0; y < this.width; y++) {
                int aliveNeighbors = countAliveNeighbors(x, y);
 
-               if (this.board[x][y] == 1) {
+               if (this.board[x][y] == ALIVE) {
                    if (aliveNeighbors == 2 || aliveNeighbors == 3) {
-                       tempBoard[x][y] = 1;
+                       tempBoard[x][y] = ALIVE;
                    } else {
-                       tempBoard[x][y] = 0;
+                       tempBoard[x][y] = DEAD;
                    }
                } else {
                    if (aliveNeighbors == 3) {
-                       tempBoard[x][y] = 1;
+                       tempBoard[x][y] = ALIVE;
                    }
                }
             }
         }
         this.board = tempBoard;
     }
-
-    public static void main(String[] args) {
-        Simulation sim = new Simulation(5, 5);
-        sim.setAlive(1,1);
-        sim.setAlive(1,2);
-        sim.setAlive(1,3);
-        sim.printBoard();
-        sim.step();
-        sim.printBoard();
-        sim.step();
-        sim.printBoard();
-        sim.step();
-        sim.printBoard();
-        //System.out.println(sim.countAliveNeighbors(1,1));
-    }
-}
+} // Simulation

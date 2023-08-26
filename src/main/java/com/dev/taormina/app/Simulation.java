@@ -27,11 +27,15 @@ public class Simulation {
         System.out.println("---\n");
     }
     public void setAlive(int x, int y) {
-        this.board[x][y] = 1;
+        if (inBounds(x, y)) {
+            this.board[x][y] = 1;
+        }
     }
 
     public void setDead(int x, int y) {
-        this.board[x][y] = 0;
+        if (inBounds(x, y)) {
+            this.board[x][y] = 0;
+        }
     }
 
     public boolean inBounds(int x, int y) {
@@ -39,7 +43,11 @@ public class Simulation {
     }
 
     public boolean isAlive(int x, int y) {
-        return this.board[x][y] == 1;
+        if (inBounds(x, y)) {
+            return this.board[x][y] == 1;
+        } else {
+            return false;
+        }
     }
 
     public int countAliveNeighbors(int x, int y) {

@@ -38,6 +38,10 @@ public class Simulation {
         return x >= 0 && x < this.height && y >= 0 && y < this.width;
     }
 
+    public boolean isAlive(int x, int y) {
+        return this.board[x][y] == 1;
+    }
+
     public int countAliveNeighbors(int x, int y) {
        int count = -this.board[x][y];
         for (int i = x - 1; i <= x + 1; i++) {

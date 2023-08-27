@@ -1,5 +1,6 @@
 package com.dev.taormina.app;
 
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
@@ -16,39 +17,34 @@ public class MainView extends VBox {
     private final Simulation simulation;
     private final Affine affine;
     private boolean drawMode = true;
-    private InfoBar infobar;
+    private final InfoBar infobar;
 
     public MainView() {
         this.canvas = new Canvas(400, 400);
-        this.canvas.setOnMousePressed(this::handleDraw);
-        this.canvas.setOnMouseDragged(this::handleDraw);
-        this.canvas.setOnMouseMoved(this::handleHover);
-
-        this.setOnKeyPressed(this::keyHandler);
 
         this.simulation = new Simulation(10, 10);
 
         Toolbar toolbar = new Toolbar(this);
-        this.infobar = new InfoBar();
 
+        this.infobar = new InfoBar();
         this.infobar.setDrawModeFormat(this.drawMode);
-        this.infobar.setCursorPosFormat(0, 0);
+        this.infobar.setCursorPositionFormat(0, 0);
+
+        this.affine = new Affine();
+        this.affine.appendScale(400 / 10f, 400 / 10f);
 
         Pane spacer = new Pane();
         spacer.setMinSize(0,0);
         spacer.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
+        // Handlers
+        this.canvas.setOnMousePressed(this::handleDraw);
+        this.canvas.setOnMouseDragged(this::handleDraw);
+        this.canvas.setOnMouseMoved(this::handleHover);
+        this.setOnKeyPressed(this::keyHandler);
+
         this.getChildren().addAll(toolbar, this.canvas, spacer, infobar);
-
-        this.affine = new Affine();
-        this.affine.appendScale(400 / 10f, 400 / 10f);
-    }
-
-    private void handleHover(MouseEvent event) {
-        int mouseX =  (int) (event.getX() / 40f);
-        int mouseY = (int) (event.getY() / 40f);
-        this.infobar.setCursorPosFormat(mouseX, mouseY);
     }
 
     private void keyHandler(KeyEvent event) {
@@ -61,16 +57,24 @@ public class MainView extends VBox {
         this.infobar.setDrawModeFormat(this.drawMode);
     }
 
+    private void handleHover(MouseEvent event) {
+        Point2D point = getMouseCoordinates(event);
+        this.infobar.setCursorPositionFormat((int) point.getX(), (int) point.getY());
+    }
+
     private void handleDraw(MouseEvent event) {
-        int mouseX =  (int) (event.getX() / 40f);
-        int mouseY = (int) (event.getY() / 40f);
+        Point2D point = getMouseCoordinates(event);
         if (this.drawMode) {
-            this.simulation.setAlive(mouseX, mouseY);
+            this.simulation.setAlive((int) point.getX(), (int) point.getY());
         } else {
-            this.simulation.setDead(mouseX, mouseY);
+            this.simulation.setDead((int) point.getX(), (int) point.getY());
         }
-        this.infobar.setCursorPosFormat(mouseX, mouseY);
+        this.infobar.setCursorPositionFormat((int) point.getX(), (int) point.getY());
         draw();
+    }
+
+    private Point2D getMouseCoordinates(MouseEvent event) {
+        return new Point2D(event.getX() / 40f, event.getY() / 40f);
     }
 
     public void draw() {
@@ -110,5 +114,4 @@ public class MainView extends VBox {
     public Simulation getSimulation() {
         return this.simulation;
     }
-
 } // MainView

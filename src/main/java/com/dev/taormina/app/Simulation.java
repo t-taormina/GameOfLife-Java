@@ -29,6 +29,7 @@ public class Simulation {
         }
         System.out.println("---\n");
     }
+
     public void setAlive(int x, int y) {
         if (inBounds(x, y)) {
             this.board[x][y] = ALIVE;

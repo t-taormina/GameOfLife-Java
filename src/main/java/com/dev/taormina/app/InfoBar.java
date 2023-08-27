@@ -6,12 +6,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 
 public class InfoBar extends HBox {
-    private static String drawModeFormat = "Draw Mode: %s";
-    private static String cursorPosFormat = "Cursor: (%d, %d)";
     private static final String DRAW = "Draw";
     private static final String ERASE = "Erase";
-    private Label cursor;
-    private Label editingTool;
+    private final Label cursor;
+    private final Label editingTool;
     public InfoBar() {
         this.cursor = new Label();
         this.editingTool = new Label();
@@ -25,6 +23,7 @@ public class InfoBar extends HBox {
     }
 
     public void setDrawModeFormat(boolean mode) {
+        String drawModeFormat = "Draw Mode: %s";
         if (mode) {
             this.editingTool.setText(String.format(drawModeFormat, DRAW));
         } else {
@@ -32,7 +31,8 @@ public class InfoBar extends HBox {
         }
     }
 
-    public void setCursorPosFormat(int x, int y) {
-        this.cursor.setText(String.format(cursorPosFormat, x, y));
+    public void setCursorPositionFormat(int x, int y) {
+        String cursorPositionFormat = "Cursor: (%d, %d)";
+        this.cursor.setText(String.format(cursorPositionFormat, x, y));
     }
 }

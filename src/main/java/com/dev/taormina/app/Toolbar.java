@@ -17,7 +17,6 @@ public class Toolbar extends ToolBar {
         Button draw = new Button("Draw");
         draw.setOnAction(actionEvent -> mv.setDrawMode(ALIVE));
 
-
         Button erase = new Button("Erase");
         erase.setOnAction(actionEvent -> mv.setDrawMode(DEAD));
 

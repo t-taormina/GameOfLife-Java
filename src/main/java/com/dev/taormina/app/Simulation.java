@@ -1,8 +1,11 @@
 package com.dev.taormina.app;
 
+import java.lang.reflect.Type;
+
 public class Simulation {
     public static int ALIVE = 1;
     public static int DEAD = 0;
+    public enum Status{ ALIVE, DEAD};
 
     int width;
     int height;
@@ -11,6 +14,14 @@ public class Simulation {
         this.width = width;
         this.height = height;
         this.board = new int[height][width];
+    }
+
+    public static Simulation copy(Simulation sim) {
+        Simulation temp = new Simulation(sim.width, sim.height);
+        for (int x = 0 ; x < sim.height; x++) {
+            if (sim.width >= 0) System.arraycopy(sim.board[x], 0, temp.board[x], 0, sim.width);
+        }
+        return temp;
     }
 
     public void printBoard() {
@@ -30,15 +41,9 @@ public class Simulation {
         System.out.println("---\n");
     }
 
-    public void setAlive(int x, int y) {
+    public void setStatus(int x, int y, int status ) {
         if (inBounds(x, y)) {
-            this.board[x][y] = ALIVE;
-        }
-    }
-
-    public void setDead(int x, int y) {
-        if (inBounds(x, y)) {
-            this.board[x][y] = DEAD;
+            this.board[x][y] = status;
         }
     }
 

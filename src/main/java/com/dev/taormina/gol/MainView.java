@@ -1,5 +1,9 @@
-package com.dev.taormina.app.gol;
+package com.dev.taormina.gol;
 
+import com.dev.taormina.gol.model.Board;
+import com.dev.taormina.gol.model.BoundedBoard;
+import com.dev.taormina.gol.model.CellState;
+import com.dev.taormina.gol.model.StandardRule;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -11,29 +15,25 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-import com.dev.taormina.app.gol.model.BoundedBoard;
-import com.dev.taormina.app.gol.model.Board;
-import com.dev.taormina.app.gol.model.CellState;
-import com.dev.taormina.app.gol.model.StandardRule;
 
 public class MainView extends VBox {
     public static final int EDITING = 0;
     public static final int SIMULATING = 1;
 
     private Canvas canvas;
-    private Board board;
+    private Board initialBoard;
     private StandardRule rule;
     private Simulation simulation;
     private Affine affine;
     private CellState drawMode = CellState.ALIVE;
     private InfoBar infobar;
-    private int mode = EDITING;
+    private int applicationState = EDITING;
 
     public MainView() {
         this.canvas = new Canvas(400, 400);
-        this.board = new BoundedBoard(10, 10);
+        this.initialBoard = new BoundedBoard(10, 10);
         this.rule = new StandardRule();
-        this.simulation = new Simulation(board, rule);
+        this.simulation = new Simulation(initialBoard, rule);
 
 //        this.initSimulation = new Simulation(10, 10);
 //        this.simulation = Simulation.copy(this.initSimulation);
@@ -79,11 +79,11 @@ public class MainView extends VBox {
     private void handleDraw(MouseEvent event) {
         Point2D point = getMouseCoordinates(event);
 
-        if (this.mode == EDITING) {
+        if (this.applicationState == EDITING) {
             if (this.drawMode == CellState.ALIVE) {
-                this.board.setState((int) point.getX(), (int) point.getY(), CellState.ALIVE);
+                this.initialBoard.setState((int) point.getX(), (int) point.getY(), CellState.ALIVE);
             } else {
-                this.board.setState((int) point.getX(), (int) point.getY(), CellState.DEAD);
+                this.initialBoard.setState((int) point.getX(), (int) point.getY(), CellState.DEAD);
             }
         }
        this.infobar.setCursorPositionFormat((int) point.getX(), (int) point.getY());
@@ -103,30 +103,31 @@ public class MainView extends VBox {
         g.fillRect(0, 0, 400, 400);
 
         // Fill cell iff cell is alive
-        if (this.mode == EDITING) {
-            drawBoard(this.board, g);
+        if (this.applicationState == EDITING) {
+            drawBoard(this.initialBoard);
         } else {
-            drawBoard(this.simulation.getBoard(), g);
+            drawBoard(this.simulation.getBoard());
         }
 
         // Draw Grid lines
         g.setStroke(Color.GRAY);
         g.setLineWidth(0.05f);
-        for (int x = 0; x <= this.board.getWidth(); x++) {
+        for (int x = 0; x <= this.initialBoard.getWidth(); x++) {
             g.strokeLine(x, 0, x, 10);
-            for (int y = 0; y <= this.board.getHeight(); y++) {
+            for (int y = 0; y <= this.initialBoard.getHeight(); y++) {
                 g.strokeLine(0, y, 10, y);
             }
         }
     } // draw
 
-    private void drawBoard(Board board, GraphicsContext graphicsContext) {
+    private void drawBoard(Board board) {
+        GraphicsContext g = this.canvas.getGraphicsContext2D();
         // Fill cell iff cell is alive
-        graphicsContext.setFill(Color.BLACK);
+        g.setFill(Color.BLACK);
         for (int x = 0; x < board.getWidth(); x++) {
             for (int y = 0; y < board.getHeight(); y++) {
                 if (board.getState(x, y) == CellState.ALIVE) {
-                    graphicsContext.fillRect(x, y, 1, 1);
+                    g.fillRect(x, y, 1, 1);
                 }
             }
         }
@@ -137,13 +138,18 @@ public class MainView extends VBox {
         this.infobar.setDrawModeFormat(mode);
     }
 
-    public void setMode(int mode) {
-        if (this.mode != mode) {
-            if (mode == SIMULATING) {
-                this.board = this.simulation.getBoard().copy();
+
+    public void setApplicationState(int applicationState) {
+        if (this.applicationState != applicationState) {
+            if (applicationState == SIMULATING) {
+                this.simulation = new Simulation(this.initialBoard, this.rule);
             }
-            this.mode = mode;
+            this.applicationState = applicationState;
         }
+    }
+
+    public int getApplicationState() {
+        return applicationState;
     }
 
     public Simulation getSimulation() {

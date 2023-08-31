@@ -1,4 +1,4 @@
-package com.dev.taormina.app.gol.model;
+package com.dev.taormina.gol.model;
 
 public class StandardRule implements SimulationRule {
     @Override
@@ -20,14 +20,13 @@ public class StandardRule implements SimulationRule {
 
     private int countAliveNeighbors(int x, int y, Board board) {
         int count = 0;
-        if (board.getState(x - 1, y - 1) == CellState.ALIVE) { count += 1; }
-        if (board.getState(x - 1, y) == CellState.ALIVE) { count += 1; }
-        if (board.getState(x - 1, y + 1) == CellState.ALIVE) { count += 1; }
-        if (board.getState(x , y - 1) == CellState.ALIVE) { count += 1; }
-        if (board.getState(x, y + 1) == CellState.ALIVE) { count += 1; }
-        if (board.getState(x + 1, y - 1) == CellState.ALIVE) { count += 1; }
-        if (board.getState(x + 1, y) == CellState.ALIVE) { count += 1; }
-        if (board.getState(x + 1, y + 1) == CellState.ALIVE) { count += 1; }
+        if (board.getState(x, y) == CellState.ALIVE) { count -= 1; }
+
+        for (int i = x - 1; i <= x + 1; i++) {
+            for (int j = y - 1; j <= y + 1; j++) {
+                if (board.getState(i, j) == CellState.ALIVE) { count += 1; }
+            }
+        }
         return count;
     }
 }

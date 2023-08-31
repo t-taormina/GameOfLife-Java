@@ -1,10 +1,10 @@
-package com.dev.taormina.app.gol;
+package com.dev.taormina.gol;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import com.dev.taormina.app.gol.model.CellState;
+import com.dev.taormina.gol.model.CellState;
 
 public class InfoBar extends HBox {
     private static final String DRAW = "Draw";

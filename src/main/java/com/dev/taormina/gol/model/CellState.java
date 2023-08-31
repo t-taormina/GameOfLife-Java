@@ -1,4 +1,4 @@
-package com.dev.taormina.app.gol.model;
+package com.dev.taormina.gol.model;
 
 public enum CellState {
     ALIVE,

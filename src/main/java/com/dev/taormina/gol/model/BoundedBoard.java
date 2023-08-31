@@ -1,9 +1,9 @@
-package com.dev.taormina.app.gol.model;
+package com.dev.taormina.gol.model;
 
 public class BoundedBoard implements Board {
-    private int width;
-    private int height;
-    private CellState[][] board;
+    private final int width;
+    private final int height;
+    private final CellState[][] board;
 
     public BoundedBoard(int width, int height) {
         this.width = width;
@@ -38,10 +38,12 @@ public class BoundedBoard implements Board {
     }
 
     @Override
-    public void setState(int x, int y, CellState cellState) {
+    public int setState(int x, int y, CellState cellState) {
         if (inBounds(x, y)) {
             this.board[x][y] = cellState;
+            return 0;
         }
+        return -1;
     }
 
     @Override

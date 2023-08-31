@@ -1,4 +1,4 @@
-package com.dev.taormina.app.gol;
+package com.dev.taormina.gol;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -10,9 +10,9 @@ public class Simulator {
     private MainView mainView;
     private Simulation simulation;
 
-    public Simulator(MainView mainView) {
+    public Simulator(MainView mainView, Simulation simulation) {
         this.mainView = mainView;
-        this.simulation = mainView.getSimulation();
+        this.simulation = simulation;
         this.timeline = new Timeline(new KeyFrame(Duration.millis(500), this::doStep));
         this.timeline.setCycleCount(Timeline.INDEFINITE);
     }

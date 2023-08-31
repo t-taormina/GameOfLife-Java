@@ -1,7 +1,7 @@
-package com.dev.taormina.app.gol;
+package com.dev.taormina.gol;
 
-import com.dev.taormina.app.gol.model.Board;
-import com.dev.taormina.app.gol.model.SimulationRule;
+import com.dev.taormina.gol.model.Board;
+import com.dev.taormina.gol.model.SimulationRule;
 
 public class Simulation {
     private Board board;

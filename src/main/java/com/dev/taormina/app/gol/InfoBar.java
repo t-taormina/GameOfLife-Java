@@ -1,9 +1,10 @@
-package com.dev.taormina.app;
+package com.dev.taormina.app.gol;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import com.dev.taormina.app.gol.model.CellState;
 
 public class InfoBar extends HBox {
     private static final String DRAW = "Draw";
@@ -22,9 +23,9 @@ public class InfoBar extends HBox {
         this.getChildren().addAll(this.editingTool, spacer, this.cursor);
     }
 
-    public void setDrawModeFormat(boolean mode) {
+    public void setDrawModeFormat(CellState mode) {
         String drawModeFormat = "Draw Mode: %s";
-        if (mode) {
+        if (mode == CellState.ALIVE) {
             this.editingTool.setText(String.format(drawModeFormat, DRAW));
         } else {
             this.editingTool.setText(String.format(drawModeFormat, ERASE));

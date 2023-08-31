@@ -1,4 +1,4 @@
-package com.dev.taormina.app;
+package com.dev.taormina.app.gol;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

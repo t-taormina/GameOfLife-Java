@@ -21,6 +21,7 @@ class ApplicationViewModelTest {
         applicationViewModel.listenToAppState(listener);
         applicationViewModel.setApplicationState(ApplicationState.SIMULATING);
         assertTrue(listener.appStateUpdated);
+        assertEquals(ApplicationState.SIMULATING, listener.updatedAppState);
     }
 
     @Test
@@ -29,12 +30,16 @@ class ApplicationViewModelTest {
         applicationViewModel.listenToAppState(listener);
         applicationViewModel.setApplicationState(ApplicationState.EDITING);
         assertFalse(listener.appStateUpdated);
+        assertNull(listener.updatedAppState);
     }
-    private static class TestListener implements SimpleChangeListener {
-        public boolean appStateUpdated = false;
+    private static class TestListener implements SimpleChangeListener<ApplicationState> {
+        private boolean appStateUpdated = false;
+        private ApplicationState updatedAppState = null;
+
         @Override
-        public void valueChanged() {
+        public void valueChanged(ApplicationState state) {
             appStateUpdated = true;
+            updatedAppState = state;
         }
     }
 }

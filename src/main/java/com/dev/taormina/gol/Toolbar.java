@@ -1,46 +1,37 @@
 package com.dev.taormina.gol;
 
 import com.dev.taormina.gol.model.CellState;
-import com.dev.taormina.gol.model.StandardRule;
-import com.dev.taormina.gol.viewModel.ApplicationState;
-import com.dev.taormina.gol.viewModel.ApplicationViewModel;
-import com.dev.taormina.gol.viewModel.BoardViewModel;
-import com.dev.taormina.gol.viewModel.EditorViewModel;
+import com.dev.taormina.gol.viewModel.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 
 public class Toolbar extends ToolBar {
-    private Simulator simulator;
     private final ApplicationViewModel applicationViewModel;
-    private final BoardViewModel boardViewModel;
     private final EditorViewModel editorViewModel;
+    private final SimulationViewModel simulationViewModel;
 
-    public Toolbar(ApplicationViewModel applicationViewModel, BoardViewModel boardViewModel, EditorViewModel editorViewModel) {
+    public Toolbar(ApplicationViewModel applicationViewModel, EditorViewModel editorViewModel, SimulationViewModel simulationViewModel) {
         this.editorViewModel = editorViewModel;
-        this.simulator = null;
+        this.simulationViewModel = simulationViewModel;
         this.applicationViewModel = applicationViewModel;
-        this.boardViewModel = boardViewModel;
 
         Button start = new Button("Start");
         start.setOnAction(actionEvent -> {
             setSimulatingMode();
-            this.simulator.start();
+            this.simulationViewModel.start();
         });
 
         Button stop = new Button("Stop");
-        stop.setOnAction(actionEvent -> this.simulator.stop());
+        stop.setOnAction(actionEvent -> this.simulationViewModel.stop());
 
         Button step = new Button("Step");
         step.setOnAction(actionEvent -> {
             setSimulatingMode();
-            this.simulator.doStep();
+            this.simulationViewModel.doStep();
         });
 
         Button reset = new Button("Reset");
-        reset.setOnAction(actionEvent -> {
-            this.applicationViewModel.setApplicationState(ApplicationState.EDITING);
-            this.simulator = null;
-        });
+        reset.setOnAction(actionEvent -> this.applicationViewModel.setApplicationState(ApplicationState.EDITING));
 
         Button draw = new Button("Draw");
         draw.setOnAction(actionEvent -> this.editorViewModel.setDrawMode(CellState.ALIVE));
@@ -53,7 +44,6 @@ public class Toolbar extends ToolBar {
 
     private void setSimulatingMode() {
         this.applicationViewModel.setApplicationState(ApplicationState.SIMULATING);
-        Simulation simulation = new Simulation(boardViewModel.getBoard(), new StandardRule());
-        this.simulator = new Simulator(this.boardViewModel, simulation);
+        this.simulationViewModel.onAppStateChanged(ApplicationState.SIMULATING);
     }
 } // Toolbar

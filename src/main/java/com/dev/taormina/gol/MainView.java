@@ -5,6 +5,7 @@ import com.dev.taormina.gol.model.CellState;
 import com.dev.taormina.gol.viewModel.ApplicationViewModel;
 import com.dev.taormina.gol.viewModel.BoardViewModel;
 import com.dev.taormina.gol.viewModel.EditorViewModel;
+import com.dev.taormina.gol.viewModel.SimulationViewModel;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -25,13 +26,13 @@ public class MainView extends VBox {
     private final EditorViewModel editorViewModel;
 
 
-    public MainView(ApplicationViewModel applicationViewModel, BoardViewModel boardViewModel, EditorViewModel editorViewModel) {
+    public MainView(ApplicationViewModel applicationViewModel, BoardViewModel boardViewModel, EditorViewModel editorViewModel, SimulationViewModel simulationViewModel) {
         this.editorViewModel = editorViewModel;
         boardViewModel.listenToBoard(this::onBoardChanged);
 
         this.canvas = new Canvas(400, 400);
 
-        Toolbar toolbar = new Toolbar(applicationViewModel, boardViewModel, editorViewModel);
+        Toolbar toolbar = new Toolbar(applicationViewModel, editorViewModel, simulationViewModel);
 
         this.infobar = new InfoBar(editorViewModel);
 

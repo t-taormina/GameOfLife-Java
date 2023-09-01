@@ -1,12 +1,10 @@
 package com.dev.taormina.gol;
 
 import com.dev.taormina.gol.model.Board;
-import com.dev.taormina.gol.model.BoundedBoard;
 import com.dev.taormina.gol.model.CellState;
-import com.dev.taormina.gol.model.StandardRule;
-import com.dev.taormina.gol.viewModel.ApplicationState;
 import com.dev.taormina.gol.viewModel.ApplicationViewModel;
 import com.dev.taormina.gol.viewModel.BoardViewModel;
+import com.dev.taormina.gol.viewModel.EditorViewModel;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -21,33 +19,21 @@ import javafx.scene.transform.Affine;
 
 public class MainView extends VBox {
 
-    private Canvas canvas;
-    private Board initialBoard;
-    private StandardRule rule;
-    private Affine affine;
-    private CellState drawMode = CellState.ALIVE;
-    private InfoBar infobar;
-    private ApplicationViewModel applicationViewModel;
-    private BoardViewModel boardViewModel;
-    private boolean isDrawingEnabled = true;
+    private final Canvas canvas;
+    private final Affine affine;
+    private final InfoBar infobar;
+    private final EditorViewModel editorViewModel;
 
 
-    public MainView(ApplicationViewModel applicationViewModel, BoardViewModel boardViewModel, Board initialBoard) {
-        this.applicationViewModel = applicationViewModel;
-        this.boardViewModel = boardViewModel;
-        
-        this.applicationViewModel.listenToAppState(this::onApplicationStateChanged);
-        this.boardViewModel.listenToBoard(this::onBoardChanged);
+    public MainView(ApplicationViewModel applicationViewModel, BoardViewModel boardViewModel, EditorViewModel editorViewModel) {
+        this.editorViewModel = editorViewModel;
+        boardViewModel.listenToBoard(this::onBoardChanged);
 
-        this.initialBoard = initialBoard;
         this.canvas = new Canvas(400, 400);
-        this.rule = new StandardRule();
 
-        Toolbar toolbar = new Toolbar(this, this.applicationViewModel, this.boardViewModel);
+        Toolbar toolbar = new Toolbar(applicationViewModel, boardViewModel, editorViewModel);
 
-        this.infobar = new InfoBar();
-        this.infobar.setDrawModeFormat(this.drawMode);
-        this.infobar.setCursorPositionFormat(0, 0);
+        this.infobar = new InfoBar(editorViewModel);
 
         this.affine = new Affine();
         this.affine.appendScale(400 / 10f, 400 / 10f);
@@ -70,45 +56,30 @@ public class MainView extends VBox {
         draw(board);
     }
 
-    private void onApplicationStateChanged(ApplicationState applicationState) {
-        if (applicationState == ApplicationState.EDITING) {
-            this.isDrawingEnabled = true;
-            this.boardViewModel.setBoard(this.initialBoard);
-        } else if (applicationState == ApplicationState.SIMULATING) {
-            this.isDrawingEnabled = false;
-        } else {
-            throw new IllegalArgumentException("Unsupported ApplicationState: " + applicationState.name());
-        }
-    }
-
     private void keyHandler(KeyEvent event) {
+        CellState format = CellState.DEAD;
         if (event.getCode() == KeyCode.E ) {
-            this.drawMode = CellState.DEAD;
+            this.editorViewModel.setDrawMode(CellState.DEAD);
         }
         if (event.getCode() == KeyCode.D) {
-            this.drawMode = CellState.ALIVE;
+            this.editorViewModel.setDrawMode(CellState.ALIVE);
+            format = CellState.ALIVE;
         }
-        this.infobar.setDrawModeFormat(this.drawMode);
+        this.infobar.setDrawModeLabel(format);
     }
 
     private void handleHover(MouseEvent event) {
         Point2D point = getMouseCoordinates(event);
-        this.infobar.setCursorPositionFormat((int) point.getX(), (int) point.getY());
+        this.infobar.setCursorPositionLabel((int) point.getX(), (int) point.getY());
     }
 
     private void handleDraw(MouseEvent event) {
         Point2D point = getMouseCoordinates(event);
+        int x = (int) point.getX();
+        int y = (int) point.getY();
 
-        if (isDrawingEnabled) {
-            if (this.drawMode == CellState.ALIVE) {
-                this.initialBoard.setState((int) point.getX(), (int) point.getY(), CellState.ALIVE);
-            } else {
-                this.initialBoard.setState((int) point.getX(), (int) point.getY(), CellState.DEAD);
-            }
-        }
-       this.infobar.setCursorPositionFormat((int) point.getX(), (int) point.getY());
-        this.boardViewModel.setBoard(this.initialBoard);
-
+        this.infobar.setCursorPositionLabel((int) point.getX(), (int) point.getY());
+        this.editorViewModel.coordinatesClicked(x, y);
     }
 
     private Point2D getMouseCoordinates(MouseEvent event) {
@@ -147,10 +118,5 @@ public class MainView extends VBox {
                 }
             }
         }
-    }
-
-    public void setDrawMode(CellState mode) {
-        this.drawMode = mode;
-        this.infobar.setDrawModeFormat(mode);
     }
 } // MainView

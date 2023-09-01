@@ -5,18 +5,19 @@ import com.dev.taormina.gol.model.StandardRule;
 import com.dev.taormina.gol.viewModel.ApplicationState;
 import com.dev.taormina.gol.viewModel.ApplicationViewModel;
 import com.dev.taormina.gol.viewModel.BoardViewModel;
+import com.dev.taormina.gol.viewModel.EditorViewModel;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 
 public class Toolbar extends ToolBar {
     private Simulator simulator;
-    private final MainView mainView;
     private final ApplicationViewModel applicationViewModel;
     private final BoardViewModel boardViewModel;
+    private final EditorViewModel editorViewModel;
 
-    public Toolbar(MainView mainView, ApplicationViewModel applicationViewModel, BoardViewModel boardViewModel) {
+    public Toolbar(ApplicationViewModel applicationViewModel, BoardViewModel boardViewModel, EditorViewModel editorViewModel) {
+        this.editorViewModel = editorViewModel;
         this.simulator = null;
-        this.mainView = mainView;
         this.applicationViewModel = applicationViewModel;
         this.boardViewModel = boardViewModel;
 
@@ -27,9 +28,7 @@ public class Toolbar extends ToolBar {
         });
 
         Button stop = new Button("Stop");
-        stop.setOnAction(actionEvent -> {
-            this.simulator.stop();
-        });
+        stop.setOnAction(actionEvent -> this.simulator.stop());
 
         Button step = new Button("Step");
         step.setOnAction(actionEvent -> {
@@ -44,10 +43,10 @@ public class Toolbar extends ToolBar {
         });
 
         Button draw = new Button("Draw");
-        draw.setOnAction(actionEvent -> this.mainView.setDrawMode(CellState.ALIVE));
+        draw.setOnAction(actionEvent -> this.editorViewModel.setDrawMode(CellState.ALIVE));
 
         Button erase = new Button("Erase");
-        erase.setOnAction(actionEvent -> this.mainView.setDrawMode(CellState.DEAD));
+        erase.setOnAction(actionEvent -> this.editorViewModel.setDrawMode(CellState.DEAD));
 
         this.getItems().addAll(start, stop, step, reset, draw, erase);
     }

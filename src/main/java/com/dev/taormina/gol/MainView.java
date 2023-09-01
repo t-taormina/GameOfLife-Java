@@ -4,6 +4,8 @@ import com.dev.taormina.gol.model.Board;
 import com.dev.taormina.gol.model.BoundedBoard;
 import com.dev.taormina.gol.model.CellState;
 import com.dev.taormina.gol.model.StandardRule;
+import com.dev.taormina.gol.viewModel.ApplicationState;
+import com.dev.taormina.gol.viewModel.ApplicationViewModel;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -17,8 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
 public class MainView extends VBox {
-    public static final int EDITING = 0;
-    public static final int SIMULATING = 1;
 
     private Canvas canvas;
     private Board initialBoard;
@@ -27,9 +27,15 @@ public class MainView extends VBox {
     private Affine affine;
     private CellState drawMode = CellState.ALIVE;
     private InfoBar infobar;
-    private int applicationState = EDITING;
+    private ApplicationViewModel applicationViewModel;
+    private boolean isDrawingEnabled = true;
+    private boolean drawInitialBoard = true;
 
-    public MainView() {
+
+    public MainView(ApplicationViewModel applicationViewModel) {
+        this.applicationViewModel = applicationViewModel;
+        applicationViewModel.listenToAppState(this::onApplicationStateChanged);
+
         this.canvas = new Canvas(400, 400);
         this.initialBoard = new BoundedBoard(10, 10);
         this.rule = new StandardRule();
@@ -38,7 +44,7 @@ public class MainView extends VBox {
 //        this.initSimulation = new Simulation(10, 10);
 //        this.simulation = Simulation.copy(this.initSimulation);
 
-        Toolbar toolbar = new Toolbar(this);
+        Toolbar toolbar = new Toolbar(this, this.applicationViewModel);
 
         this.infobar = new InfoBar();
         this.infobar.setDrawModeFormat(this.drawMode);
@@ -61,6 +67,19 @@ public class MainView extends VBox {
         this.getChildren().addAll(toolbar, this.canvas, spacer, infobar);
     }
 
+    private void onApplicationStateChanged(ApplicationState applicationState) {
+        if (applicationState == ApplicationState.EDITING) {
+            this.isDrawingEnabled = true;
+            this.drawInitialBoard = true;
+        } else if (applicationState == ApplicationState.SIMULATING) {
+            this.isDrawingEnabled = false;
+            this.drawInitialBoard = false;
+            this.simulation = new Simulation(this.initialBoard, this.rule);
+        } else {
+            throw new IllegalArgumentException("Unsupported ApplicationState: " + applicationState.name());
+        }
+    }
+
     private void keyHandler(KeyEvent event) {
         if (event.getCode() == KeyCode.E ) {
             this.drawMode = CellState.DEAD;
@@ -79,7 +98,7 @@ public class MainView extends VBox {
     private void handleDraw(MouseEvent event) {
         Point2D point = getMouseCoordinates(event);
 
-        if (this.applicationState == EDITING) {
+        if (isDrawingEnabled) {
             if (this.drawMode == CellState.ALIVE) {
                 this.initialBoard.setState((int) point.getX(), (int) point.getY(), CellState.ALIVE);
             } else {
@@ -103,7 +122,7 @@ public class MainView extends VBox {
         g.fillRect(0, 0, 400, 400);
 
         // Fill cell iff cell is alive
-        if (this.applicationState == EDITING) {
+        if (drawInitialBoard) {
             drawBoard(this.initialBoard);
         } else {
             drawBoard(this.simulation.getBoard());
@@ -136,20 +155,6 @@ public class MainView extends VBox {
     public void setDrawMode(CellState mode) {
         this.drawMode = mode;
         this.infobar.setDrawModeFormat(mode);
-    }
-
-
-    public void setApplicationState(int applicationState) {
-        if (this.applicationState != applicationState) {
-            if (applicationState == SIMULATING) {
-                this.simulation = new Simulation(this.initialBoard, this.rule);
-            }
-            this.applicationState = applicationState;
-        }
-    }
-
-    public int getApplicationState() {
-        return applicationState;
     }
 
     public Simulation getSimulation() {

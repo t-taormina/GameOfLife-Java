@@ -1,16 +1,20 @@
 package com.dev.taormina.gol;
 
 import com.dev.taormina.gol.model.CellState;
+import com.dev.taormina.gol.viewModel.ApplicationState;
+import com.dev.taormina.gol.viewModel.ApplicationViewModel;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 
 public class Toolbar extends ToolBar {
     private Simulator simulator;
     private final MainView mainView;
+    private final ApplicationViewModel applicationViewModel;
 
-    public Toolbar(MainView mainView) {
+    public Toolbar(MainView mainView, ApplicationViewModel applicationViewModel) {
         this.simulator = new Simulator(mainView, mainView.getSimulation());
         this.mainView = mainView;
+        this.applicationViewModel = applicationViewModel;
 
         Button start = new Button("Start");
         start.setOnAction(actionEvent -> {
@@ -32,7 +36,8 @@ public class Toolbar extends ToolBar {
 
         Button reset = new Button("Reset");
         reset.setOnAction(actionEvent -> {
-            this.mainView.setApplicationState(MainView.EDITING);
+            this.applicationViewModel.setApplicationState(ApplicationState.EDITING);
+            this.simulator = null;
             this.mainView.draw();
         });
 
@@ -46,9 +51,7 @@ public class Toolbar extends ToolBar {
     }
 
     private void setSimulatingMode() {
-        if (this.mainView.getApplicationState() == MainView.EDITING) {
-            this.mainView.setApplicationState(MainView.SIMULATING);
-            this.simulator = new Simulator(this.mainView, this.mainView.getSimulation());
-        }
+        this.applicationViewModel.setApplicationState(ApplicationState.SIMULATING);
+        this.simulator = new Simulator(this.mainView, this.mainView.getSimulation());
     }
 } // Toolbar

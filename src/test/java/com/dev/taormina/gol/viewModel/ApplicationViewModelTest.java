@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ApplicationViewModelTest {
 
-
     private ApplicationViewModel applicationViewModel;
 
     @BeforeEach

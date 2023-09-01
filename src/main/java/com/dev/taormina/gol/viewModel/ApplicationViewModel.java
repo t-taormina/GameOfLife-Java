@@ -25,10 +25,6 @@ public class ApplicationViewModel {
         }
     }
 
-    public ApplicationState getApplicationState() {
-        return applicationState;
-    }
-
     public void listenToAppState(SimpleChangeListener<ApplicationState> listener) {
         this.appStateListeners.add(listener);
     }
